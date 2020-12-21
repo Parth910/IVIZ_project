@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- India State Map  -->
+    <title>India Map</title>
+
+    <!--  Styles  -->
+    <style>
+        .bar {
+            fill: steelblue;
+        }
+
+        .bar:hover {
+            fill: brown;
+        }
+
+        .axis {
+            font: 10px sans-serif;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .tooltip {
+            position: absolute;
+      text-align: center;
+      padding: 0.5em;
+      font-size: 90%;
+      color: #222;
+      background: #FFF;
+      border-radius: 2px;
+      pointer-events: none;
+      box-shadow: 0px 0px 2px 0px #a6a6a6;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Year wise Length of National highways in India from 2004 to 2015(in Kms)</h3>
+    <script src="https://d3js.org/d3.v4.js"></script>
+
+    <!-- Create a div where the graph will take place -->
+    <div id="my_dataviz"></div>
+
+    <script type="text/javascript">
+        var margin = { top: 10, right: 30, bottom: 30, left: 60 },
+            width = 560 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom;
+
+        // append the svg object to the body of the page
+        var svg = d3.select("#my_dataviz")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+        function parseData(data) {
+            var arr = [];
+            var fr = 0, fv = 0, sx = 0, sv = 0, eg = 0, nn = 0, tt = 0, el = 0, tw = 0, th = 0, frt = 0, fifn = 0;
+            for (var i in data.data) {
+                // console.log(data.data[i][1]);
+                if (data.data[i][1] != "NA") {
+                    fr = +fr + +data.data[i][1];
+                    fv = +fv + +data.data[i][2];
+                    sx += +data.data[i][3];
+                    sv += +data.data[i][4];
+                    eg += +data.data[i][5];
+                    nn += +data.data[i][6];
+                    tt += +data.data[i][7];
+                    el += +data.data[i][8];
+                    tw += +data.data[i][9];
+                    th += +data.data[i][10];
+                    frt += +data.data[i][11];
+                    fifn += +data.data[i][12];
+                }
+            }
+            arr.push({
+                year: 2004,
+                kms: fr
+            });
+            arr.push({
+                year: 2005,
+                kms: fv
+            });
+            arr.push({
+                year: 2006,
+                kms: sx
+            });
+            arr.push({
+                year: 2007,
+                kms: sv
+            });
+            arr.push({
+                year: 2008,
+                kms: eg
+            });
+            arr.push({
+                year: 2009,
+                kms: nn
+            });
+            arr.push({
+                year: 2010,
+                kms: tt
+            });
+            arr.push({
+                year: 2011,
+                kms: el
+            });
+            arr.push({
+                year: 2012,
+                kms: tw
+            });
+            arr.push({
+                year: 2013,
+                kms: th
+            });
+            arr.push({
+                year: 2014,
+                kms: frt
+            });
+            arr.push({
+                year: 2015,
+                kms: fifn
+            });
+            console.log(arr);
+            return arr;
+        }
+        const tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0)
+    .style("position", "absolute");
+
+        function drawChart(data) {
+            var x = d3.scaleLinear()
+                .domain(d3.extent(data, function (d) { return d.year; }))
+                .range([0, width]);
+            svg.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x));
+
+            // Add Y axis
+            var y = d3.scaleLinear()
+                .domain([60000, d3.max(data, function (d) { return +d.kms; })])
+                .range([height, 0]);
+            svg.append("g")
+                .call(d3.axisLeft(y));
+
+            // Add the line
+            svg.append("path")
+                .datum(data)
+                .attr("fill", "none")
+                .attr("stroke", "steelblue")
+                .attr("stroke-width", 1.5)
+                .attr("d", d3.line()
+                    .x(function (d) { return x(d.year) })
+                    .y(function (d) { return y(d.kms) })
+                )
+
+            svg.selectAll("myCircles")
+                .data(data)
+                .enter()
+                .append("circle")
+                .attr("fill", "red")
+                .attr("stroke", "none")
+                .attr("cx", function (d) { return x(d.year) })
+                .attr("cy", function (d) { return y(d.kms) })
+                .attr("r", 3)
+
+
+                .on('mouseover', function (d) {
+                    d3.select(this).transition().duration(300).style("opacity", 1);
+          tooltip.transition().duration(300)
+            .style("opacity", 1)
+          tooltip.text(d.year + " : " + d.kms)
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 30) + "px");
+                })
+
+                .on("mouseout", function (d) {
+                    tooltip.transition()
+                        .duration(100)
+                        .style("opacity", 0);
+                });
+
+        }
+        d3.json("highwaydata.json", function (error, data) {
+            var parsedData = parseData(data);
+            drawChart(parsedData);
+        })
+
+    </script>
+</body>
+
+</html>

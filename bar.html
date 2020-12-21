@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<head>
+    <style>
+        .bar {
+            fill: steelblue;
+        }
+
+        .bar:hover {
+            fill: brown;
+        }
+
+        .axis {
+            font: 10px sans-serif;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .x.axis path {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+        .tooltip {
+            position: absolute;
+      text-align: center;
+      padding: 0.5em;
+      font-size: 90%;
+      color: #222;
+      background: #FFF;
+      border-radius: 2px;
+      pointer-events: none;
+      box-shadow: 0px 0px 2px 0px #a6a6a6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script>
+
+        var margin = { top: 20, right: 20, bottom: 50, left: 40 },
+            //width = 960 - margin.left - margin.right,
+            width = 1050 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom;
+
+        var x = d3.scale.ordinal()
+            .rangeRoundBands([0, width], .1);
+
+        var y = d3.scale.linear()
+            .range([height, 0 + margin.top]);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            .ticks(10); //  .ticks(10, "%");
+
+        var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            function compare( a, b ) {
+  if ( a.kms < b.kms ){
+    return 1;
+  }
+  if ( a.kms > b.kms ){
+    return -1;
+  }
+  return 0;
+}
+const tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0)
+    .style("position", "absolute");
+
+
+            function parseData(data) {
+            var arr1 = [],arr2=[];
+            for (var i in data.data) {
+                if (data.data[i][12] != "NA" && data.data[i][12] >1000 ) {
+
+                    
+                    arr1.push({
+                        state: data.data[i][0],
+                        kms: data.data[i][12]
+                    });
+                }
+            }
+
+            arr1.sort(compare);
+            console.log(arr1);
+            arr2 = arr1.slice(0,5);
+            return arr2;
+        }
+        function drawChart(data) {
+            x.domain(data.map(function (d) { return d.state; }));
+            y.domain([0, d3.max(data, function (d) { return d.kms; })]);
+
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis)
+                .append("text")             // text label for the x axis
+                .attr("x", (width / 2))
+                .attr("y", 20)
+                .attr("dy", ".71em")
+                .style("text-anchor", "middle")
+                .style("font-size", "16px")
+                .text("States");
+
+            // add y-axis
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append("text") // and text1
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .style("font-size", "16px")
+                .text("Kms");
+
+            svg.selectAll(".bar")
+                .data(data)
+                .enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", function (d) { return x(d.state); })
+                .attr("width", x.rangeBand())
+                .attr("y", function (d) { return y(d.kms); })
+                .attr("height", function (d) { return height - y(d.kms); })
+                .on('mouseleave', function (d, i) {
+          d3.select(this).transition().duration(300)
+            .style("opacity", 1);
+          tooltip.transition().duration(300)
+            .style("opacity", 0);
+        })
+        .on('mouseenter', function (d, i) {
+          d3.select(this).transition().duration(300).style("opacity", 1);
+          tooltip.transition().duration(300)
+            .style("opacity", 1)
+          tooltip.text(d.state + " : " + d.kms)
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 30) + "px");
+
+        });
+
+            // add a title
+            svg.append("text")
+                .attr("x", (width / 2))
+                .attr("y", 0 + (margin.top / 2))
+                .attr("text-anchor", "middle")
+                .style("font-size", "24px")
+                //.style("text-decoration", "underline")  
+                .text("Top 5 State as per Length of National Highways");
+
+        }
+        d3.json("highwaydata.json", function (error, data) {
+
+            var parsedData = parseData(data);
+            drawChart(parsedData);
+
+        });
+
+    </script>
+
+</body>
