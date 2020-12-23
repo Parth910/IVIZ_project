@@ -1,18 +1,28 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" />
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+<!-- MDB -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.0.0/mdb.min.css" rel="stylesheet" />
+<!-- MDB -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.0.0/mdb.min.js"></script>
 
 <head>
     <style>
         .bar {
-            fill: steelblue;
+            fill: #00B74A;
+           
         }
 
         .bar:hover {
-            fill: brown;
+            fill: #2196F3;
         }
 
         .axis {
-            font: 10px sans-serif;
+            font: 12px sans-serif;
         }
 
         .axis path,
@@ -27,22 +37,40 @@
             stroke: #000;
             shape-rendering: crispEdges;
         }
+
         .tooltip {
             position: absolute;
-      text-align: center;
-      padding: 0.5em;
-      font-size: 90%;
-      color: #222;
-      background: #FFF;
-      border-radius: 2px;
-      pointer-events: none;
-      box-shadow: 0px 0px 2px 0px #a6a6a6;
+            text-align: center;
+            padding: 0.5em;
+            font-size: 90%;
+            color: #222;
+            background: #FFF;
+            border-radius: 2px;
+            pointer-events: none;
+            box-shadow: 0px 0px 2px 0px #a6a6a6;
         }
     </style>
 </head>
 
 <body>
+    <div class="container  ">
+        <div class="row mb-5 mt-5">
 
+            <div class="col align-self-center">
+                <button type="button" class="btn btn-info">
+                    <h3>Top 5 State as per Length of National Highways</h3>
+                </button>
+            </div>
+
+        </div>
+        <div class="row">
+
+            <div class="col align-self-center">
+
+            </div>
+
+        </div>
+    </div>
     <script src="https://d3js.org/d3.v3.min.js"></script>
     <script>
 
@@ -71,27 +99,27 @@
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-            function compare( a, b ) {
-  if ( a.kms < b.kms ){
-    return 1;
-  }
-  if ( a.kms > b.kms ){
-    return -1;
-  }
-  return 0;
-}
-const tooltip = d3.select("body").append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0)
-    .style("position", "absolute");
+        function compare(a, b) {
+            if (a.kms < b.kms) {
+                return 1;
+            }
+            if (a.kms > b.kms) {
+                return -1;
+            }
+            return 0;
+        }
+        const tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0)
+            .style("position", "absolute");
 
 
-            function parseData(data) {
-            var arr1 = [],arr2=[];
+        function parseData(data) {
+            var arr1 = [], arr2 = [];
             for (var i in data.data) {
-                if (data.data[i][12] != "NA" && data.data[i][12] >1000 ) {
+                if (data.data[i][12] != "NA" && data.data[i][12] > 1000) {
 
-                    
+
                     arr1.push({
                         state: data.data[i][0],
                         kms: data.data[i][12]
@@ -100,8 +128,8 @@ const tooltip = d3.select("body").append("div")
             }
 
             arr1.sort(compare);
-            console.log(arr1);
-            arr2 = arr1.slice(0,5);
+            ///console.log(arr1);
+            arr2 = arr1.slice(0, 5);
             return arr2;
         }
         function drawChart(data) {
@@ -130,6 +158,12 @@ const tooltip = d3.select("body").append("div")
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
                 .style("font-size", "16px")
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - 40)
+                .attr("x", 0 - 10)
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
                 .text("Kms");
 
             svg.selectAll(".bar")
@@ -141,20 +175,20 @@ const tooltip = d3.select("body").append("div")
                 .attr("y", function (d) { return y(d.kms); })
                 .attr("height", function (d) { return height - y(d.kms); })
                 .on('mouseleave', function (d, i) {
-          d3.select(this).transition().duration(300)
-            .style("opacity", 1);
-          tooltip.transition().duration(300)
-            .style("opacity", 0);
-        })
-        .on('mouseenter', function (d, i) {
-          d3.select(this).transition().duration(300).style("opacity", 1);
-          tooltip.transition().duration(300)
-            .style("opacity", 1)
-          tooltip.text(d.state + " : " + d.kms)
-            .style("left", (d3.event.pageX) + "px")
-            .style("top", (d3.event.pageY - 30) + "px");
+                    d3.select(this).transition().duration(300)
+                        .style("opacity", 1);
+                    tooltip.transition().duration(300)
+                        .style("opacity", 0);
+                })
+                .on('mouseenter', function (d, i) {
+                    d3.select(this).transition().duration(300).style("opacity", 1);
+                    tooltip.transition().duration(300)
+                        .style("opacity", 1)
+                    tooltip.text(d.state + " : " + d.kms +" km")
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 30) + "px");
 
-        });
+                });
 
             // add a title
             svg.append("text")
@@ -163,7 +197,7 @@ const tooltip = d3.select("body").append("div")
                 .attr("text-anchor", "middle")
                 .style("font-size", "24px")
                 //.style("text-decoration", "underline")  
-                .text("Top 5 State as per Length of National Highways");
+                .text("");
 
         }
         d3.json("highwaydata.json", function (error, data) {
