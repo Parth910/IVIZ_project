@@ -1,18 +1,28 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <!-- MDB -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.0.0/mdb.min.css" rel="stylesheet" />
+    <!-- MDB -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.0.0/mdb.min.js"></script>
 
 <head>
     <style>
-        .bar {
-            fill: steelblue;
+       .bar {
+            fill:#FFD54F;
+           
         }
 
         .bar:hover {
-            fill: brown;
+            fill: #B2EBF2;
         }
 
         .axis {
-            font: 10px sans-serif;
+            font: 12px sans-serif;
         }
 
         .axis path,
@@ -42,7 +52,22 @@
 </head>
 
 <body>
-
+    <div class="container  ">
+        <div class="row mb-5 mt-5">
+          
+            <div class="col align-self-center">
+                <button type="button" class="btn btn-info"> <h3>Bottom 5 State as per Length of National Highways</h3></button>
+            </div>
+           
+          </div>
+        <div class="row">
+          
+          <div class="col align-self-center">
+           
+          </div>
+         
+        </div>
+      </div>
     <script src="https://d3js.org/d3.v3.min.js"></script>
     <script>
 
@@ -129,8 +154,7 @@ const tooltip = d3.select("body").append("div")
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
                 .style("font-size", "16px")
-                .text("Kms");
-
+               
             svg.selectAll(".bar")
                 .data(data)
                 .enter().append("rect")
@@ -149,12 +173,18 @@ const tooltip = d3.select("body").append("div")
           d3.select(this).transition().duration(300).style("opacity", 1);
           tooltip.transition().duration(300)
             .style("opacity", 1)
-          tooltip.text(d.state + " : " + d.kms)
+          tooltip.text(d.state + " : " + d.kms+" km")
             .style("left", (d3.event.pageX) + "px")
             .style("top", (d3.event.pageY - 30) + "px");
 
         });
-
+        svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - 40)
+      .attr("x",0 - 10)
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Kms");   
             // add a title
             svg.append("text")
                 .attr("x", (width / 2))
@@ -162,7 +192,7 @@ const tooltip = d3.select("body").append("div")
                 .attr("text-anchor", "middle")
                 .style("font-size", "24px")
                 //.style("text-decoration", "underline")  
-                .text("Top 5 State as per Length of National Highways");
+                
 
         }
         d3.json("highwaydata.json", function (error, data) {
