@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <!-- MDB -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.0.0/mdb.min.css" rel="stylesheet" />
+    <!-- MDB -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.0.0/mdb.min.js"></script>
 <head>
     <!-- India State Map  -->
     <title>India Map</title>
@@ -41,16 +50,32 @@
 </head>
 
 <body>
-    <h3>Year wise Length of National highways in India from 2004 to 2015(in Kms)</h3>
+    
     <script src="https://d3js.org/d3.v4.js"></script>
 
     <!-- Create a div where the graph will take place -->
-    <div id="my_dataviz"></div>
+    <div class="container  ">
+        <div class="row mb-5 mt-5">
+          
+            <div class="col align-self-center">
+                <button type="button" class="btn btn-info"> <h3>Year wise Length of National highways in India from 2004 to 2015(in Kms)</h3></button>
+            </div>
+           
+          </div>
+        <div class="row">
+          
+          <div class="col align-self-center">
+            <div id="my_dataviz"></div>
+          </div>
+         
+        </div>
+      </div>
+   
 
     <script type="text/javascript">
         var margin = { top: 10, right: 30, bottom: 30, left: 60 },
-            width = 560 - margin.left - margin.right,
-            height = 400 - margin.top - margin.bottom;
+            width = 600 - margin.left - margin.right,
+            height = 480 - margin.top - margin.bottom;
 
         // append the svg object to the body of the page
         var svg = d3.select("#my_dataviz")
@@ -60,7 +85,7 @@
             .append("g")
             .attr("transform",
                 "translate(" + margin.left + "," + margin.top + ")");
-
+                var parseDate = d3.timeParse("%Y");
         function parseData(data) {
             var arr = [];
             var fr = 0, fv = 0, sx = 0, sv = 0, eg = 0, nn = 0, tt = 0, el = 0, tw = 0, th = 0, frt = 0, fifn = 0;
@@ -178,7 +203,7 @@
                     d3.select(this).transition().duration(300).style("opacity", 1);
           tooltip.transition().duration(300)
             .style("opacity", 1)
-          tooltip.text(d.year + " : " + d.kms)
+          tooltip.text(d.year + " : " + d.kms+" kms")
             .style("left", (d3.event.pageX) + "px")
             .style("top", (d3.event.pageY - 30) + "px");
                 })
@@ -189,6 +214,20 @@
                         .style("opacity", 0);
                 });
 
+                svg.append("text")             
+      .attr("transform",
+            "translate(" + (width/2) + " ," + 
+                           (height + margin.top + 20) + ")")
+      .style("text-anchor", "middle")
+      .text("Year");
+
+      svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Kms");    
         }
         d3.json("highwaydata.json", function (error, data) {
             var parsedData = parseData(data);
